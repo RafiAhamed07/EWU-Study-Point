@@ -328,3 +328,786 @@ nav[aria-label="Pagination"] span.current {
 .form-card button[type="submit"]:hover {
 	opacity: 0.9;
 }
+
+.notice-card img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 4px;
+	margin-bottom: 12px;
+}
+
+/* ---------- Buttons (landing page + general use) ---------- */
+
+.btn-primary,
+.btn-secondary {
+	display: inline-block;
+	padding: 10px 20px;
+	border-radius: 4px;
+	font-family: var(--font-body);
+	font-weight: 500;
+	font-size: 14px;
+	text-align: center;
+	cursor: pointer;
+	border: none;
+}
+
+.btn-primary {
+	background: var(--amber);
+	color: var(--amber-text);
+}
+
+.btn-primary:hover {
+	opacity: 0.9;
+}
+
+.btn-secondary {
+	background: transparent;
+	color: var(--paper-cream);
+	border: 1px solid rgba(246, 241, 228, 0.3);
+}
+
+.btn-secondary:hover {
+	border-color: var(--paper-cream);
+}
+
+/* ---------- Landing hero ---------- */
+
+main .notice-card:has(> h1) {
+	text-align: center;
+	max-width: 560px;
+	margin: 60px auto;
+	padding: 40px 32px;
+}
+
+main .notice-card:has(> h1) h1 {
+	font-family: var(--font-display);
+	font-size: 28px;
+	margin: 0 0 12px;
+}
+
+main .notice-card:has(> h1) p {
+	color: #5F5E5A;
+	margin: 0 0 24px;
+	line-height: 1.6;
+}
+
+main .notice-card:has(> h1) .material-actions {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+}
+
+/* ---------- Logo ---------- */
+
+.site-brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.site-logo {
+	height: 32px;
+	width: auto;
+	display: block;
+}
+
+/* ---------- Landing hero with building photo ---------- */
+
+.hero-banner {
+	position: relative;
+	max-width: 900px;
+	margin: 40px auto 0;
+	border-radius: 8px;
+	overflow: hidden;
+	background-image: linear-gradient(180deg, rgba(27, 36, 48, 0.55), rgba(27, 36, 48, 0.85)),
+		url('../images/ewu_building.png');
+	background-size: cover;
+	background-position: center;
+	padding: 72px 32px;
+	text-align: center;
+}
+
+.hero-banner h1 {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 32px;
+	color: var(--paper-cream);
+	margin: 0 0 12px;
+}
+
+.hero-banner p {
+	color: var(--paper-cream);
+	opacity: 0.9;
+	max-width: 480px;
+	margin: 0 auto 28px;
+	line-height: 1.6;
+}
+
+.hero-banner .material-actions {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+}
+
+
+/* ---------- Tables (admin pages) ---------- */
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+thead th {
+	text-align: left;
+	padding: 10px 12px;
+	color: var(--chalk-gray);
+	font-weight: 500;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	border-bottom: 1px solid rgba(246, 241, 228, 0.12);
+}
+
+tbody td {
+	padding: 12px;
+	border-bottom: 1px solid rgba(246, 241, 228, 0.06);
+	vertical-align: middle;
+}
+
+tbody tr:hover {
+	background: rgba(255, 255, 255, 0.03);
+}
+
+tbody td form {
+	background: none;
+	padding: 0;
+	margin: 0;
+	display: inline;
+}
+
+tbody td button {
+	background: rgba(255, 255, 255, 0.08);
+	color: var(--paper-cream);
+	border: 1px solid rgba(246, 241, 228, 0.15);
+	border-radius: 4px;
+	padding: 5px 12px;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+tbody td button:hover {
+	background: rgba(255, 255, 255, 0.14);
+}
+
+.status-banned {
+	color: var(--red);
+	font-weight: 500;
+}
+
+.status-active {
+	color: var(--green);
+	font-weight: 500;
+}
+
+/* ---------- Admin nav + stat cards ---------- */
+
+.admin-links {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 24px;
+	font-size: 13px;
+}
+
+.admin-links a {
+	color: var(--chalk-gray);
+	padding: 8px 4px;
+	border-bottom: 2px solid transparent;
+}
+
+.admin-links a:hover {
+	color: var(--paper-cream);
+	border-bottom-color: var(--amber);
+}
+
+.admin-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 16px;
+	margin-bottom: 32px;
+}
+
+.stat-card {
+	text-align: center;
+	padding: 24px 16px;
+}
+
+.stat-number {
+	font-family: var(--font-display);
+	font-size: 32px;
+	font-weight: 600;
+	color: var(--ink-navy);
+}
+
+.stat-label {
+	font-size: 12px;
+	color: #5F5E5A;
+	margin-top: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+a.stat-card-danger .stat-number,
+a.stat-card-danger .stat-label {
+	color: var(--red-text);
+}
+
+a.stat-card-danger {
+	background: #F6E4E2;
+	transition: transform 0.15s ease;
+}
+
+a.stat-card-danger:hover {
+	transform: translateY(-2px);
+}
+
+/* ---------- Comment thread ---------- */
+
+.comment {
+	border-left: 2px solid rgba(246, 241, 228, 0.12);
+	padding: 12px 0 12px 16px;
+	margin-top: 14px;
+}
+
+.comment > div:first-child {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	font-size: 13px;
+	margin-bottom: 6px;
+}
+
+.comment > div:first-child strong {
+	color: var(--paper-cream);
+}
+
+.comment > div:first-child span {
+	color: var(--chalk-gray);
+	font-size: 12px;
+}
+
+.comment > div:nth-child(2) {
+	font-size: 14px;
+	line-height: 1.6;
+	margin-bottom: 8px;
+}
+
+.comment .notice-stats {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	color: var(--chalk-gray);
+	gap: 12px;
+	margin-bottom: 6px;
+}
+
+.comment .notice-stats button {
+	background: none;
+	border: none;
+	color: var(--chalk-gray);
+	cursor: pointer;
+	font-family: var(--font-mono);
+	font-size: 12px;
+	padding: 2px 6px;
+	border-radius: 3px;
+}
+
+.comment .notice-stats button:hover {
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--paper-cream);
+}
+
+.comment .notice-stats button.active {
+	color: var(--amber);
+}
+
+.comment textarea {
+	width: 100%;
+	min-height: 60px;
+	margin-top: 6px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(246, 241, 228, 0.15);
+	border-radius: 4px;
+	padding: 8px;
+	color: var(--paper-cream);
+	font-family: var(--font-body);
+	font-size: 13px;
+	resize: vertical;
+}
+
+/* ---------- Material card tweaks ---------- */
+
+.tape-tab-green {
+	background: var(--green);
+	color: var(--paper-cream);
+}
+
+.material-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+.material-actions a {
+	background: var(--green);
+	color: var(--paper-cream);
+	padding: 6px 14px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.material-actions a:hover {
+	opacity: 0.9;
+}
+
+.material-actions form button {
+	background: none;
+	border: 1px solid rgba(27, 36, 48, 0.2);
+	color: #5F5E5A;
+	padding: 6px 14px;
+	border-radius: 4px;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.material-actions form button:hover {
+	border-color: var(--red);
+	color: var(--red);
+}
+
+/* ---------- Accessibility + general polish ---------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	outline: 2px solid var(--amber);
+	outline-offset: 2px;
+}
+
+.site-nav-links a {
+	transition: color 0.15s ease;
+}
+
+.notice-card {
+	transition: transform 0.12s ease;
+}
+
+.notice-title:hover {
+	text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+	main {
+		padding: 20px 16px;
+	}
+
+	.site-nav {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.site-nav-links {
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	form {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.hero-banner {
+		padding: 48px 20px;
+	}
+
+	.hero-banner h1 {
+		font-size: 24px;
+	}
+
+	.admin-stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* ---------- Discussion view page polish ---------- */
+
+.notice-card > h1 {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 24px;
+	color: var(--ink-navy);
+	margin: 14px 0 10px;
+	line-height: 1.3;
+}
+
+.notice-card > p {
+	color: #5F5E5A;
+	font-size: 13px;
+	margin: 0 0 18px;
+}
+
+.notice-card > div:not(.notice-stats):not(.material-actions) {
+	color: #333;
+	font-size: 15px;
+	line-height: 1.7;
+	margin-bottom: 20px;
+}
+
+/* Attachments row */
+.notice-card > div:has(img),
+.notice-card > div:has(a[target="_blank"]) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.notice-card img {
+	max-width: 260px;
+	width: 100%;
+	height: auto;
+	border-radius: 4px;
+	border: 1px solid rgba(27, 36, 48, 0.1);
+	display: block;
+}
+
+.notice-card > div a[target="_blank"]:not(:has(img)) {
+	display: inline-flex;
+	align-items: center;
+	background: rgba(27, 36, 48, 0.05);
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	color: var(--ink-navy);
+	padding: 8px 14px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	height: fit-content;
+}
+
+.notice-card > div a[target="_blank"]:not(:has(img)):hover {
+	border-color: var(--green);
+	color: var(--green);
+}
+
+/* Vote controls row */
+.notice-card > .notice-stats {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 0;
+	border-top: 1px solid rgba(27, 36, 48, 0.08);
+	border-bottom: 1px solid rgba(27, 36, 48, 0.08);
+	margin-bottom: 16px;
+}
+
+.notice-card > .notice-stats form {
+	display: inline;
+}
+
+.notice-card > .notice-stats button {
+	background: rgba(27, 36, 48, 0.05);
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	color: var(--ink-navy);
+	border-radius: 4px;
+	padding: 6px 12px;
+	font-size: 13px;
+	cursor: pointer;
+	font-family: var(--font-mono);
+}
+
+.notice-card > .notice-stats button:hover {
+	border-color: var(--amber);
+}
+
+.notice-card > .notice-stats button.active {
+	background: var(--amber);
+	color: var(--amber-text);
+	border-color: var(--amber);
+}
+
+.notice-card > .notice-stats > span {
+	font-family: var(--font-mono);
+	font-weight: 500;
+	color: var(--ink-navy);
+	font-size: 14px;
+	min-width: 24px;
+	text-align: center;
+}
+
+/* Edit / Delete / Report action row */
+/* ---------- Edit / Delete / Report action row — final ---------- */
+
+.notice-card > div:has(> a[href^="edit.php"]),
+.notice-card > div:has(> form[action="delete.php"]),
+.notice-card > div:has(> form[action="../report_handler.php"]) {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 24px;
+}
+
+.notice-card > div > a[href^="edit.php"],
+.notice-card form[action="delete.php"] button,
+.notice-card form[action="../report_handler.php"] button {
+	box-sizing: border-box;
+	height: 34px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 16px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	font-family: var(--font-body);
+	line-height: 1;
+	cursor: pointer;
+	margin: 0;
+}
+
+.notice-card > div > a[href^="edit.php"] {
+	background: rgba(27, 36, 48, 0.05);
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	color: var(--ink-navy);
+	text-decoration: none;
+}
+
+.notice-card > div > a[href^="edit.php"]:hover {
+	border-color: var(--green);
+	color: var(--green);
+}
+
+.notice-card form[action="delete.php"] {
+	display: inline-flex;
+	margin: 0;
+	padding: 0;
+}
+
+.notice-card form[action="delete.php"] button {
+	background: none;
+	border: 1px solid rgba(193, 68, 60, 0.4);
+	color: var(--red);
+}
+
+.notice-card form[action="delete.php"] button:hover {
+	background: var(--red);
+	color: var(--paper-cream);
+}
+
+.notice-card form[action="../report_handler.php"] {
+	display: inline-flex;
+	margin: 0;
+	padding: 0;
+}
+
+.notice-card form[action="../report_handler.php"] button {
+	background: none;
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	color: #5F5E5A;
+}
+
+.notice-card form[action="../report_handler.php"] button:hover {
+	border-color: var(--red);
+	color: var(--red);
+}
+
+/* Comments section */
+.notice-card section {
+	margin-top: 8px;
+}
+
+.notice-card section > h2 {
+	font-family: var(--font-display);
+	font-size: 17px;
+	font-weight: 500;
+	margin: 0 0 16px;
+}
+
+.notice-card section > form[action="../comment_handler.php"] {
+	margin-bottom: 24px;
+}
+
+.notice-card section > form[action="../comment_handler.php"] textarea {
+	width: 100%;
+	min-height: 80px;
+	background: rgba(27, 36, 48, 0.03);
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	border-radius: 4px;
+	padding: 10px;
+	font-family: var(--font-body);
+	font-size: 14px;
+	color: var(--ink-navy);
+	resize: vertical;
+	margin-bottom: 8px;
+}
+
+
+.comment form[action="../comment_handler.php"] button {
+    background: rgb(145 197 119 / 46%);
+    border: 1px solid rgb(0 0 0 / 15%);
+    color: #21201f;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+
+
+.notice-card section > form[action="../comment_handler.php"] button {
+	/* background: var(--green); */
+	background: green;
+	color: var(--paper-cream);
+	border: none;
+	padding: 8px 18px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.notice-card section > form[action="../comment_handler.php"] button:hover {
+	opacity: 0.9;
+}
+
+.comment .notice-stats {
+	border: none;
+	padding: 4px 0;
+}
+
+.comment div:has(> p) {
+	margin-top: 6px;
+}
+
+.comment div:has(> p) p {
+	font-size: 12px;
+	color: var(--chalk-gray);
+	margin: 0 0 4px;
+}
+
+
+
+.comment form[action="../comment_handler.php"] button:hover {
+	background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* ---------- Comment thread — light background (nested in .notice-card) ---------- */
+
+.comment {
+	border-left: 2px solid rgba(27, 36, 48, 0.12);
+	padding: 12px 0 12px 16px;
+	margin-top: 14px;
+}
+
+.comment > div:first-child strong {
+	color: var(--ink-navy);
+}
+
+.comment > div:first-child span {
+	color: #8A8A85;
+	font-size: 12px;
+}
+
+.comment > div:nth-child(2) {
+	color: #333;
+	font-size: 14px;
+	line-height: 1.6;
+	margin-bottom: 8px;
+}
+
+.comment .notice-stats {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border: none;
+	padding: 4px 0 8px;
+	margin-bottom: 0;
+}
+
+.comment .notice-stats form {
+	display: inline-flex;
+}
+
+.comment .notice-stats button {
+	display: inline-flex;
+	align-items: center;
+	background: rgba(27, 36, 48, 0.05);
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	color: var(--ink-navy);
+	border-radius: 4px;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-family: var(--font-mono);
+	cursor: pointer;
+	line-height: 1;
+}
+
+.comment .notice-stats button:hover {
+	border-color: var(--amber);
+}
+
+.comment .notice-stats button.active {
+	background: var(--amber);
+	color: var(--amber-text);
+	border-color: var(--amber);
+}
+
+.comment .notice-stats > span {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	color: #5F5E5A;
+	min-width: 18px;
+	text-align: center;
+}
+
+.comment > div:has(> p) > p {
+	font-size: 12px;
+	color: #5F5E5A;
+	margin: 0 0 6px;
+}
+
+.comment > div:has(> p) textarea {
+	width: 100%;
+	min-height: 50px;
+	background: rgba(27, 36, 48, 0.03);
+	border: 1px solid rgba(27, 36, 48, 0.15);
+	border-radius: 4px;
+	padding: 8px;
+	color: var(--ink-navy);
+	font-family: var(--font-body);
+	font-size: 13px;
+	resize: vertical;
+}
+
+.comment > div:has(> p) button {
+	align-self: flex-start;
+	background: var(--green);
+	color: var(--paper-cream);
+	border: none;
+	padding: 6px 14px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.comment > div:has(> p) button:hover {
+	opacity: 0.9;
+}

@@ -12,7 +12,10 @@ $site_root = '/ewu_study_point/ewu-study-point';
 </head>
 <body>
 <nav class="site-nav">
-	<a class="site-brand" href="<?php echo $site_root; ?>/index.php">EWU Study Point</a>
+	<a class="site-brand" href="<?php echo $site_root; ?>/index.php">
+	<img src="<?php echo $site_root; ?>/assets/images/ewu_logo.png" alt="EWU Study Point" class="site-logo">
+	<span>EWU Study Point</span>
+	</a>
 
 	<div class="site-nav-links">
 		<?php if (!empty($_SESSION['user_id'])): ?>

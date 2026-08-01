@@ -71,57 +71,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		redirect('../index.php');
 	}
 }
+
+$page_title = 'Register — EWU Study Point';
+require_once '../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Register</title>
-</head>
-<body>
-	<h1>Create Account</h1>
 
-	<?php if (!empty($errors)): ?>
-		<ul>
-			<?php foreach ($errors as $error): ?>
-				<li><?php echo $error; ?></li>
-			<?php endforeach; ?>
-		</ul>
-	<?php endif; ?>
+<main>
+	<div class="notice-card form-card">
+		<h1>Create Account</h1>
 
-	<form method="post" action="register.php">
-		<div>
-			<label for="name">Name</label>
-			<input type="text" id="name" name="name" value="<?php echo $name; ?>" required>
-		</div>
+		<?php if (!empty($errors)): ?>
+			<div class="form-errors">
+				<ul>
+					<?php foreach ($errors as $error): ?>
+						<li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php endif; ?>
 
-		<div>
-			<label for="student_id">Student ID</label>
-			<input type="text" id="student_id" name="student_id" value="<?php echo $student_id; ?>" required>
-		</div>
+		<form method="post" action="register.php">
+			<div>
+				<label for="name">Name</label>
+				<input type="text" id="name" name="name" value="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>" required>
+			</div>
 
-		<div>
-			<label for="email">Email</label>
-			<input type="email" id="email" name="email" value="<?php echo $email; ?>" required>
-		</div>
+			<div>
+				<label for="student_id">Student ID</label>
+				<input type="text" id="student_id" name="student_id" value="<?php echo htmlspecialchars($student_id, ENT_QUOTES, 'UTF-8'); ?>" required>
+			</div>
 
-		<div>
-			<label for="password">Password</label>
-			<input type="password" id="password" name="password" required>
-		</div>
+			<div>
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required>
+			</div>
 
-		<div>
-			<label for="confirm_password">Confirm Password</label>
-			<input type="password" id="confirm_password" name="confirm_password" required>
-		</div>
+			<div>
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" required>
+			</div>
 
-		<div>
-			<label for="department">Department</label>
-			<input type="text" id="department" name="department" value="<?php echo $department; ?>" required>
-		</div>
+			<div>
+				<label for="confirm_password">Confirm Password</label>
+				<input type="password" id="confirm_password" name="confirm_password" required>
+			</div>
 
-		<button type="submit">Register</button>
-	</form>
-</body>
-</html>
+			<div>
+				<label for="department">Department</label>
+				<input type="text" id="department" name="department" value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>" required>
+			</div>
+
+			<button type="submit">Register</button>
+		</form>
+	</div>
+</main>
+
+<?php require_once '../includes/footer.php'; ?>

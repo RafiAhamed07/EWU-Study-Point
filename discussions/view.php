@@ -171,6 +171,13 @@ function render_comment_thread(array $comment, array $comments_by_parent, array 
 					<textarea name="content"></textarea>
 					<button type="submit">Post reply</button>
 				</form>
+						<?php if ((int) $comment['user_id'] === (int) ($_SESSION['user_id'] ?? 0)): ?>
+							<form method="POST" action="../comment_delete.php" onsubmit="return confirm('Delete this comment and all its replies? This cannot be undone.');">
+								<input type="hidden" name="comment_id" value="<?php echo $comment_id; ?>">
+								<input type="hidden" name="discussion_id" value="<?php echo (int) $discussion_id; ?>">
+								<button type="submit">Delete</button>
+							</form>
+						<?php endif; ?>
 			</div>
 		<?php endif; ?>
 
@@ -226,6 +233,7 @@ require_once '../includes/header.php';
 				<form method="POST" action="../vote_handler.php">
 					<input type="hidden" name="target_type" value="discussion">
 					<input type="hidden" name="target_id" value="<?php echo (int) $discussion['id']; ?>">
+					<input type="hidden" name="discussion_id" value="<?php echo (int) $discussion['id']; ?>">
 					<input type="hidden" name="vote_type" value="up">
 					<button type="submit" class="<?php echo $user_discussion_vote === 'up' ? 'active' : ''; ?>">Upvote</button>
 				</form>
@@ -235,10 +243,11 @@ require_once '../includes/header.php';
 				<form method="POST" action="../vote_handler.php">
 					<input type="hidden" name="target_type" value="discussion">
 					<input type="hidden" name="target_id" value="<?php echo (int) $discussion['id']; ?>">
+					<input type="hidden" name="discussion_id" value="<?php echo (int) $discussion['id']; ?>">
 					<input type="hidden" name="vote_type" value="down">
 					<button type="submit" class="<?php echo $user_discussion_vote === 'down' ? 'active' : ''; ?>">Downvote</button>
 				</form>
-			<?php else: ?>
+							<?php else: ?>
 				<span><?php echo (int) $discussion['vote_score']; ?> votes</span>
 			<?php endif; ?>
 		</div>
@@ -247,7 +256,7 @@ require_once '../includes/header.php';
 			<div>
 				<?php if ($is_owner): ?>
 					<a href="edit.php?id=<?php echo (int) $discussion['id']; ?>">Edit</a>
-					<form method="POST" action="delete.php">
+					<form method="POST" action="delete.php" onsubmit="return confirm('Delete this discussion? This cannot be undone.');">
 						<input type="hidden" name="id" value="<?php echo (int) $discussion['id']; ?>">
 						<button type="submit">Delete</button>
 					</form>

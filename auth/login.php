@@ -41,41 +41,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		}
 	}
 }
+
+$page_title = 'Login — EWU Study Point';
+require_once '../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Login</title>
-</head>
-<body>
-	<h1>Login</h1>
 
-	<?php if (!empty($errors)): ?>
-		<ul>
-			<?php foreach ($errors as $error): ?>
-				<li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
-			<?php endforeach; ?>
-		</ul>
-	<?php endif; ?>
+<main>
+	<div class="notice-card form-card">
+		<h1>Log in</h1>
 
-	<form method="post" action="login.php">
-		<div>
-			<label for="email">Email</label>
-			<input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required>
-		</div>
+		<?php if (!empty($errors)): ?>
+			<div class="form-errors">
+				<ul>
+					<?php foreach ($errors as $error): ?>
+						<li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php endif; ?>
 
-		<div>
-			<label for="password">Password</label>
-			<input type="password" id="password" name="password" required>
-		</div>
+		<form method="post" action="login.php">
+			<div>
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required>
+			</div>
 
-		<button type="submit">Login</button>
-	</form>
+			<div>
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" required>
+			</div>
 
-	<p>
-		New user? <a href="register.php">Register here</a>
-	</p>
-</body>
-</html>
+			<button type="submit">Login</button>
+		</form>
+
+		<p>
+			New user? <a href="register.php">Register here</a>
+		</p>
+	</div>
+</main>
+
+<?php require_once '../includes/footer.php'; ?>
