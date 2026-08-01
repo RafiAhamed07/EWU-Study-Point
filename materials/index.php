@@ -111,6 +111,11 @@ require_once '../includes/header.php';
 ?>
 
 <main>
+	<div class="page-header">
+		<h1>Study materials</h1>
+		<a href="upload.php" class="btn-primary">Upload material</a>
+	</div>
+
 	<form method="GET">
 		<div>
 			<label for="department">Department</label>
@@ -159,7 +164,7 @@ require_once '../includes/header.php';
 						<span class="notice-stats"><?php echo htmlspecialchars($m['uploader_name'], ENT_QUOTES, 'UTF-8'); ?></span>
 					</div>
 					<div class="material-actions">
-						<a href="<?php echo htmlspecialchars('../' . ltrim($m['file_path'], '/'), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" download>Download</a>
+						<a href="<?php echo htmlspecialchars('../' . ltrim($m['file_path'], '/'), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">Download</a>
 						<?php if (isset($_SESSION['user_id'])): ?>
 							<form method="POST" action="../report_handler.php">
 								<input type="hidden" name="material_id" value="<?php echo (int) $m['id']; ?>">

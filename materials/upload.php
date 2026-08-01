@@ -27,6 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		'other',
 	];
 
+	$allowed_mime_types = [
+		'application/pdf' => '.pdf',
+		'image/jpeg' => '.jpg',
+		'image/png' => '.png',
+		'application/zip' => '.zip',
+		'application/x-zip-compressed' => '.zip',
+	];
+
 	if ($title === '') {
 		$errors[] = 'Title is required.';
 	} elseif (strlen($title) > 200) {
@@ -67,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		} else {
 			$tmp_name = $_FILES['material_file']['tmp_name'] ?? '';
 			$detected_mime_type = $tmp_name !== '' ? finfo_file($finfo, $tmp_name) : false;
-			if ($detected_mime_type !== 'application/pdf') {
-				$errors[] = 'Only PDF files are allowed.';
+			if ($detected_mime_type === false || !array_key_exists($detected_mime_type, $allowed_mime_types)) {
+				$errors[] = 'Only PDF, JPEG, PNG, or ZIP files are allowed.';
 			}
 
 			finfo_close($finfo);
@@ -77,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	if (empty($errors)) {
 		try {
-			$generated_filename = bin2hex(random_bytes(16)) . '.pdf';
+			$generated_filename = bin2hex(random_bytes(16)) . $allowed_mime_types[$detected_mime_type];
 		} catch (Exception $exception) {
 			$errors[] = 'Unable to generate a filename for the uploaded file.';
 		}
@@ -161,8 +169,8 @@ require_once '../includes/header.php';
 			</div>
 
 			<div>
-				<label for="material_file">Upload PDF (required, max 100MB)</label>
-				<input type="file" id="material_file" name="material_file" accept="application/pdf" required>
+				<label for="material_file">Upload file - PDF, image, or ZIP (required, max 100MB)</label>
+				<input type="file" id="material_file" name="material_file" accept="application/pdf,image/jpeg,image/png,application/zip" required>
 			</div>
 
 			<button type="submit">Upload material</button>

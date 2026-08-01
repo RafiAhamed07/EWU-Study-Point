@@ -67,9 +67,28 @@ a {
 /* ---------- Layout ---------- */
 
 main {
-	max-width: 900px;
+	max-width: 1180px;
 	margin: 0 auto;
 	padding: 32px;
+}
+
+.page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.page-header h1 {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 22px;
+	color: var(--paper-cream);
+	margin: 0;
+}
+
+.page-header .btn-primary {
+	flex-shrink: 0;
 }
 
 /* ---------- Filter form ---------- */
@@ -98,7 +117,7 @@ form label {
 
 form input[type="text"] {
 	background: rgba(255, 255, 255, 0.06);
-	border: 1px solid rgba(246, 241, 228, 0.15);
+	border: 1px solid rgb(43, 0, 0);
 	border-radius: 4px;
 	padding: 8px 10px;
 	color: var(--paper-cream);
@@ -136,7 +155,7 @@ form a {
 }
 
 form a:hover {
-	color: var(--paper-cream);
+	color: var(--amber);
 }
 
 /* ---------- Notice card ---------- */
@@ -375,7 +394,7 @@ nav[aria-label="Pagination"] span.current {
 
 main .notice-card:has(> h1) {
 	text-align: center;
-	max-width: 560px;
+	max-width: 850px;
 	margin: 60px auto;
 	padding: 40px 32px;
 }
@@ -416,7 +435,7 @@ main .notice-card:has(> h1) .material-actions {
 
 .hero-banner {
 	position: relative;
-	max-width: 900px;
+	max-width: 1000px;
 	margin: 40px auto 0;
 	border-radius: 8px;
 	overflow: hidden;
@@ -481,7 +500,7 @@ tbody tr:hover {
 }
 
 tbody td form {
-	background: none;
+	background: #7681d7;
 	padding: 0;
 	margin: 0;
 	display: inline;

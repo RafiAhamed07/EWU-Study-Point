@@ -98,6 +98,11 @@ require_once '../includes/header.php';
 ?>
 
 <main>
+	<div class="page-header">
+		<h1>Discussions</h1>
+		<a href="create.php" class="btn-primary">Ask a question</a>
+	</div>
+
 	<form method="GET">
 		<div>
 			<label for="department">Department</label>
