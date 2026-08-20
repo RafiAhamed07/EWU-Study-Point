@@ -189,10 +189,18 @@ function render_comment_thread(array $comment, array $comments_by_parent, array 
 }
 
 $page_title = $discussion['title'] . ' — EWU Study Point';
+$report_success = $_SESSION['report_success'] ?? '';
+unset($_SESSION['report_success']);
 require_once '../includes/header.php';
 ?>
 
 <main>
+	<?php if (!empty($report_success)): ?>
+		<div style="background: rgba(47, 111, 78, 0.1); border: 1px solid var(--green); color: var(--green-text); border-radius: 4px; padding: 12px 16px; margin-bottom: 20px;">
+			<?php echo htmlspecialchars($report_success, ENT_QUOTES, 'UTF-8'); ?>
+		</div>
+	<?php endif; ?>
+
 	<div class="notice-card">
 		<span class="tape-tab"><?php echo htmlspecialchars($discussion['course_name'], ENT_QUOTES, 'UTF-8'); ?></span>
 		<h1><?php echo htmlspecialchars($discussion['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
@@ -261,13 +269,27 @@ require_once '../includes/header.php';
 						<button type="submit">Delete</button>
 					</form>
 				<?php else: ?>
-					<form method="POST" action="../report_handler.php">
+					<form method="POST" action="../report_handler.php" onsubmit="return confirmReport(this);">
 						<input type="hidden" name="discussion_id" value="<?php echo (int) $discussion['id']; ?>">
+						<input type="hidden" name="reason" value="Inappropriate discussion content">
 						<button type="submit">Report</button>
 					</form>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>
+
+		<script>
+		function confirmReport(form) {
+			var reason = prompt('Please enter a reason for reporting this discussion (optional):', 'Inappropriate or offensive discussion content');
+			if (reason === null) {
+				return false;
+			}
+			if (reason.trim() !== '') {
+				form.querySelector('input[name="reason"]').value = reason.trim();
+			}
+			return true;
+		}
+		</script>
 
 		<section>
 			<h2><?php echo count($comments); ?> comments</h2>

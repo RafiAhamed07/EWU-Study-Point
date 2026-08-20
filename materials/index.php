@@ -6,11 +6,9 @@ require_once '../includes/functions.php';
 function bind_material_stmt_params(mysqli_stmt $stmt, string $types, array $params): void
 {
 	$bind_values = [$types];
-
 	foreach ($params as $index => $value) {
 		$bind_values[] = &$params[$index];
 	}
-
 	call_user_func_array([$stmt, 'bind_param'], $bind_values);
 }
 
@@ -24,12 +22,23 @@ $material_type = trim($_GET['material_type'] ?? '');
 $search = trim($_GET['search'] ?? '');
 
 $allowed_material_types = [
-	'hand_notes',
-	'lecture_sheet',
-	'lecture_slide',
-	'term_paper',
-	'previous_question',
-	'other',
+	'book' => 'Books & Textbooks',
+	'hand_notes' => 'Hand Notes',
+	'lecture_sheet' => 'Lecture Sheets',
+	'lecture_slide' => 'Lecture Slides',
+	'term_paper' => 'Term Papers',
+	'previous_question' => 'Previous Questions',
+	'other' => 'Other Materials',
+];
+
+$type_icons = [
+	'book' => '📚',
+	'hand_notes' => '📝',
+	'lecture_sheet' => '📄',
+	'lecture_slide' => '📑',
+	'term_paper' => '📋',
+	'previous_question' => '❓',
+	'other' => '📎',
 ];
 
 $where_clauses = [];
@@ -48,16 +57,20 @@ if ($course !== '') {
 	$types .= 's';
 }
 
-if ($material_type !== '' && in_array($material_type, $allowed_material_types, true)) {
+if ($material_type !== '' && array_key_exists($material_type, $allowed_material_types)) {
 	$where_clauses[] = 'm.material_type = ?';
 	$params[] = $material_type;
 	$types .= 's';
 }
 
 if ($search !== '') {
-	$where_clauses[] = 'm.title LIKE ?';
-	$params[] = '%' . $search . '%';
-	$types .= 's';
+	$where_clauses[] = '(m.title LIKE ? OR m.course_name LIKE ? OR m.department LIKE ? OR m.faculty_name LIKE ?)';
+	$search_term = '%' . $search . '%';
+	$params[] = $search_term;
+	$params[] = $search_term;
+	$params[] = $search_term;
+	$params[] = $search_term;
+	$types .= 'ssss';
 }
 
 $where_sql = '';
@@ -107,75 +120,134 @@ $materials = $materials_result->fetch_all(MYSQLI_ASSOC);
 $materials_stmt->close();
 
 $page_title = 'Study Materials — EWU Study Point';
+$report_success = $_SESSION['report_success'] ?? '';
+unset($_SESSION['report_success']);
 require_once '../includes/header.php';
 ?>
 
 <main>
+	<?php if (!empty($report_success)): ?>
+		<div style="background: #E6F6ED; border: 1px solid #1B6E3F; color: #1B6E3F; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; font-weight: 600;">
+			<?php echo htmlspecialchars($report_success, ENT_QUOTES, 'UTF-8'); ?>
+		</div>
+	<?php endif; ?>
+
 	<div class="page-header">
-		<h1>Study materials</h1>
-		<a href="upload.php" class="btn-primary">Upload material</a>
+		<div>
+			<h1>Study Materials &amp; Academic Resources</h1>
+			<p class="page-subtitle">Download lecture notes, textbooks, slides, and previous exam question papers shared by EWU students.</p>
+		</div>
+		<a href="upload.php" class="btn-primary" style="padding: 10px 20px; font-size: 14px;">+ Upload Material</a>
 	</div>
 
-	<form method="GET">
-		<div>
+	<!-- Material Type Quick Filter Pills -->
+	<div style="display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 6px;">
+		<a href="index.php" class="<?php echo $material_type === '' ? 'btn-primary' : 'btn-secondary'; ?>" style="padding: 7px 14px; font-size: 13px; white-space: nowrap;">
+			📑 All Materials
+		</a>
+		<?php foreach ($allowed_material_types as $key => $label): ?>
+			<a href="index.php?material_type=<?php echo $key; ?>" class="<?php echo $material_type === $key ? 'btn-primary' : 'btn-secondary'; ?>" style="padding: 7px 14px; font-size: 13px; white-space: nowrap;">
+				<?php echo $type_icons[$key] ?? '📄'; ?> <?php echo $label; ?>
+			</a>
+		<?php endforeach; ?>
+	</div>
+
+	<!-- Filter Search Bar -->
+	<form method="GET" action="index.php" class="filter-bar">
+		<?php if ($material_type !== ''): ?>
+			<input type="hidden" name="material_type" value="<?php echo htmlspecialchars($material_type, ENT_QUOTES, 'UTF-8'); ?>">
+		<?php endif; ?>
+
+		<div class="form-group" style="flex: 2;">
+			<label for="search">Keyword Search</label>
+			<input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Search title, course code (e.g. CSE106), or faculty...">
+		</div>
+
+		<div class="form-group">
 			<label for="department">Department</label>
-			<input type="text" id="department" name="department" value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>">
+			<input type="text" id="department" name="department" value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>" placeholder="e.g. CSE, EEE, BBA">
 		</div>
 
-		<div>
-			<label for="course">Course</label>
-			<input type="text" id="course" name="course" value="<?php echo htmlspecialchars($course, ENT_QUOTES, 'UTF-8'); ?>">
+		<div class="form-group">
+			<label for="course">Course Name / Code</label>
+			<input type="text" id="course" name="course" value="<?php echo htmlspecialchars($course, ENT_QUOTES, 'UTF-8'); ?>" placeholder="e.g. MAT101">
 		</div>
 
-		<div>
-			<label for="material_type">Material type</label>
-			<select id="material_type" name="material_type">
-				<option value="" <?php echo $material_type === '' ? 'selected' : ''; ?>>All types</option>
-				<option value="hand_notes" <?php echo $material_type === 'hand_notes' ? 'selected' : ''; ?>>Hand notes</option>
-				<option value="lecture_sheet" <?php echo $material_type === 'lecture_sheet' ? 'selected' : ''; ?>>Lecture sheet</option>
-				<option value="lecture_slide" <?php echo $material_type === 'lecture_slide' ? 'selected' : ''; ?>>Lecture slide</option>
-				<option value="term_paper" <?php echo $material_type === 'term_paper' ? 'selected' : ''; ?>>Term paper</option>
-				<option value="previous_question" <?php echo $material_type === 'previous_question' ? 'selected' : ''; ?>>Previous question</option>
-				<option value="other" <?php echo $material_type === 'other' ? 'selected' : ''; ?>>Other</option>
-			</select>
-		</div>
-
-		<div>
-			<label for="search">Search</label>
-			<input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>">
-		</div>
-
-		<button type="submit">Filter</button>
-		<a href="index.php">Clear filters</a>
+		<button type="submit" class="btn-primary">Filter</button>
+		<a href="index.php" class="btn-secondary">Clear</a>
 	</form>
 
-	<section>
-		<?php if (empty($materials)): ?>
-			<p>No materials found. Be the first to upload.</p>
-			<p><a href="upload.php">Upload study material</a></p>
-		<?php else: ?>
+	<!-- Materials Grid -->
+	<?php if (empty($materials)): ?>
+		<div class="form-card" style="text-align: center; max-width: 600px; margin: 40px auto;">
+			<div style="font-size: 48px; margin-bottom: 12px;">📚</div>
+			<h2 style="font-size: 18px; color: var(--ewu-blue); margin: 0 0 8px;">No study materials found</h2>
+			<p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+				No materials found matching your search. Be the first to help your fellow classmates!
+			</p>
+			<a href="upload.php" class="btn-primary">+ Upload Material</a>
+		</div>
+	<?php else: ?>
+		<div class="card-grid">
 			<?php foreach ($materials as $m): ?>
-				<div class="notice-card material-card">
-					<span class="tape-tab tape-tab-green"><?php echo htmlspecialchars($m['course_name'], ENT_QUOTES, 'UTF-8'); ?></span>
-					<p class="notice-title"><?php echo htmlspecialchars($m['title'], ENT_QUOTES, 'UTF-8'); ?></p>
-					<p class="notice-excerpt"><?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $m['material_type'])), ENT_QUOTES, 'UTF-8'); ?></p>
-					<div class="notice-meta">
-						<span><?php echo htmlspecialchars($m['faculty_name'], ENT_QUOTES, 'UTF-8'); ?> &middot; <?php echo htmlspecialchars($m['department'], ENT_QUOTES, 'UTF-8'); ?></span>
-						<span class="notice-stats"><?php echo htmlspecialchars($m['uploader_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+				<?php
+				$m_type = $m['material_type'];
+				$m_icon = $type_icons[$m_type] ?? '📄';
+				$m_label = $allowed_material_types[$m_type] ?? ucwords(str_replace('_', ' ', $m_type));
+				?>
+				<div class="item-card">
+					<div class="card-body">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+							<span class="badge badge-blue" style="font-weight: 800;"><?php echo htmlspecialchars($m['course_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+							<span class="badge badge-gray"><?php echo $m_icon; ?> <?php echo htmlspecialchars($m_label, ENT_QUOTES, 'UTF-8'); ?></span>
+						</div>
+
+						<h3 class="card-title" title="<?php echo htmlspecialchars($m['title'], ENT_QUOTES, 'UTF-8'); ?>">
+							<?php echo htmlspecialchars($m['title'], ENT_QUOTES, 'UTF-8'); ?>
+						</h3>
+
+						<div style="font-size: 13px; color: var(--text-body); margin-bottom: 12px;">
+							<div><strong>Faculty:</strong> <?php echo htmlspecialchars($m['faculty_name'], ENT_QUOTES, 'UTF-8'); ?></div>
+							<div><strong>Dept:</strong> <?php echo htmlspecialchars($m['department'], ENT_QUOTES, 'UTF-8'); ?></div>
+						</div>
+
+						<div class="card-meta">
+							<span>By: <?php echo htmlspecialchars($m['uploader_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+							<span><?php echo date('M j, Y', strtotime($m['uploaded_at'])); ?></span>
+						</div>
 					</div>
-					<div class="material-actions">
-						<a href="<?php echo htmlspecialchars('../' . ltrim($m['file_path'], '/'), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">Download</a>
+
+					<div class="card-actions">
+						<a href="<?php echo htmlspecialchars('../' . ltrim($m['file_path'], '/'), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex: 1; padding: 7px 12px; font-size: 13px;">
+							📥 Download File
+						</a>
 						<?php if (isset($_SESSION['user_id'])): ?>
-							<form method="POST" action="../report_handler.php">
+							<form method="POST" action="../report_handler.php" onsubmit="return confirmReport(this);" style="margin: 0;">
 								<input type="hidden" name="material_id" value="<?php echo (int) $m['id']; ?>">
-								<button type="submit">Report</button>
+								<input type="hidden" name="reason" value="Inappropriate study material">
+								<button type="submit" class="btn-outline-danger" style="padding: 7px 10px;" title="Report this material">
+									🚩
+								</button>
 							</form>
 						<?php endif; ?>
 					</div>
 				</div>
 			<?php endforeach; ?>
-		<?php endif; ?>
-	</section>
+		</div>
+	<?php endif; ?>
+
+	<script>
+	function confirmReport(form) {
+		var reason = prompt('Please enter a reason for reporting this material (optional):', 'Inappropriate or incorrect study material');
+		if (reason === null) {
+			return false;
+		}
+		if (reason.trim() !== '') {
+			form.querySelector('input[name="reason"]').value = reason.trim();
+		}
+		return true;
+	}
+	</script>
 
 	<?php if ($total_pages > 1): ?>
 		<?php
@@ -196,7 +268,7 @@ require_once '../includes/header.php';
 		<nav aria-label="Pagination">
 			<?php if ($current_page > 1): ?>
 				<?php $prev_params = array_merge($filter_params, ['page' => $current_page - 1]); ?>
-				<a href="?<?php echo htmlspecialchars(http_build_query($prev_params), ENT_QUOTES, 'UTF-8'); ?>">Prev</a>
+				<a href="?<?php echo htmlspecialchars(http_build_query($prev_params), ENT_QUOTES, 'UTF-8'); ?>">&larr; Prev</a>
 			<?php endif; ?>
 
 			<?php for ($page = 1; $page <= $total_pages; $page++): ?>
@@ -210,11 +282,10 @@ require_once '../includes/header.php';
 
 			<?php if ($current_page < $total_pages): ?>
 				<?php $next_params = array_merge($filter_params, ['page' => $current_page + 1]); ?>
-				<a href="?<?php echo htmlspecialchars(http_build_query($next_params), ENT_QUOTES, 'UTF-8'); ?>">Next</a>
+				<a href="?<?php echo htmlspecialchars(http_build_query($next_params), ENT_QUOTES, 'UTF-8'); ?>">Next &rarr;</a>
 			<?php endif; ?>
 		</nav>
 	<?php endif; ?>
 </main>
 
 <?php require_once '../includes/footer.php'; ?>
-

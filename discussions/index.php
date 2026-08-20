@@ -15,7 +15,7 @@ function bind_stmt_params(mysqli_stmt $stmt, string $types, array $params): void
 }
 
 $current_page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
-$per_page = 10;
+$per_page = 12;
 $offset = ($current_page - 1) * $per_page;
 
 $where_clauses = [];
@@ -39,11 +39,12 @@ if ($course !== '') {
 }
 
 if ($search !== '') {
-	$where_clauses[] = '(d.title LIKE ? OR d.description LIKE ?)';
+	$where_clauses[] = '(d.title LIKE ? OR d.description LIKE ? OR d.topic LIKE ?)';
 	$search_term = '%' . $search . '%';
 	$params[] = $search_term;
 	$params[] = $search_term;
-	$types .= 'ss';
+	$params[] = $search_term;
+	$types .= 'sss';
 }
 
 $where_sql = '';
@@ -74,7 +75,8 @@ $discussions_sql = '
 		d.topic,
 		d.vote_score,
 		d.created_at,
-		u.name AS author_name
+		u.name AS author_name,
+		(SELECT COUNT(*) FROM comments c WHERE c.discussion_id = d.id) AS comment_count
 	FROM discussions d
 	JOIN users u ON d.user_id = u.id
 	' . $where_sql . '
@@ -93,57 +95,91 @@ $discussions_result = $discussions_stmt->get_result();
 $discussions = $discussions_result->fetch_all(MYSQLI_ASSOC);
 $discussions_stmt->close();
 
-$page_title = 'Discussions — EWU Study Point';
+$page_title = 'Community Discussions — EWU Study Point';
 require_once '../includes/header.php';
 ?>
 
 <main>
 	<div class="page-header">
-		<h1>Discussions</h1>
-		<a href="create.php" class="btn-primary">Ask a question</a>
+		<div>
+			<h1>Community Discussions &amp; Q&amp;A</h1>
+			<p class="page-subtitle">Ask questions, share problem solutions, and get help from fellow East West University peers.</p>
+		</div>
+		<a href="create.php" class="btn-accent" style="padding: 10px 20px; font-size: 14px;">+ Ask a Question</a>
 	</div>
 
-	<form method="GET">
-		<div>
+	<!-- Filter Search Bar -->
+	<form method="GET" action="index.php" class="filter-bar">
+		<div class="form-group" style="flex: 2;">
+			<label for="search">Keyword Search</label>
+			<input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Search discussion topics, questions, concepts...">
+		</div>
+
+		<div class="form-group">
 			<label for="department">Department</label>
-			<input type="text" id="department" name="department" value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>">
+			<input type="text" id="department" name="department" value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>" placeholder="e.g. CSE, EEE, BBA">
 		</div>
 
-		<div>
-			<label for="course">Course</label>
-			<input type="text" id="course" name="course" value="<?php echo htmlspecialchars($course, ENT_QUOTES, 'UTF-8'); ?>">
+		<div class="form-group">
+			<label for="course">Course Code</label>
+			<input type="text" id="course" name="course" value="<?php echo htmlspecialchars($course, ENT_QUOTES, 'UTF-8'); ?>" placeholder="e.g. MAT101, CSE207">
 		</div>
 
-		<div>
-			<label for="search">Search</label>
-			<input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>">
-		</div>
-
-		<button type="submit">Filter</button>
-		<a href="index.php">Clear filters</a>
+		<button type="submit" class="btn-primary">Filter</button>
+		<a href="index.php" class="btn-secondary">Clear</a>
 	</form>
 
-	<section>
-		<?php if (empty($discussions)): ?>
-			<p>No discussions found. Be the first to ask.</p>
-			<p><a href="create.php">Create a discussion</a></p>
-		<?php else: ?>
+	<!-- Discussions Grid -->
+	<?php if (empty($discussions)): ?>
+		<div class="form-card" style="text-align: center; max-width: 600px; margin: 40px auto;">
+			<div style="font-size: 48px; margin-bottom: 12px;">💬</div>
+			<h2 style="font-size: 18px; color: var(--ewu-blue); margin: 0 0 8px;">No discussions found</h2>
+			<p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+				No questions matched your search criteria. Start a new thread to get help!
+			</p>
+			<a href="create.php" class="btn-accent">+ Start Discussion</a>
+		</div>
+	<?php else: ?>
+		<div class="card-grid">
 			<?php foreach ($discussions as $d): ?>
-				<div class="notice-card">
-					<span class="tape-tab"><?php echo htmlspecialchars($d['course_name'], ENT_QUOTES, 'UTF-8'); ?></span>
-					<a href="view.php?id=<?php echo (int) $d['id']; ?>" class="notice-title"><?php echo htmlspecialchars($d['title'], ENT_QUOTES, 'UTF-8'); ?></a>
-					<p class="notice-excerpt"><?php echo htmlspecialchars(mb_strimwidth($d['description'], 0, 120, '...'), ENT_QUOTES, 'UTF-8'); ?></p>
-					<div class="notice-meta">
-						<span><?php echo htmlspecialchars($d['faculty_name'], ENT_QUOTES, 'UTF-8'); ?> &middot; <?php echo htmlspecialchars($d['department'], ENT_QUOTES, 'UTF-8'); ?></span>
-						<span class="notice-stats">
-							<span><?php echo (int) $d['vote_score']; ?> votes</span>
-							<span><?php echo htmlspecialchars($d['author_name'], ENT_QUOTES, 'UTF-8'); ?></span>
-						</span>
+				<div class="item-card" onclick="window.location='view.php?id=<?php echo (int) $d['id']; ?>'">
+					<div class="card-body">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+							<span class="badge badge-blue" style="font-weight: 800;"><?php echo htmlspecialchars($d['course_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+							<span class="badge badge-gray"><?php echo htmlspecialchars($d['topic'], ENT_QUOTES, 'UTF-8'); ?></span>
+						</div>
+
+						<a href="view.php?id=<?php echo (int) $d['id']; ?>" class="card-title">
+							<?php echo htmlspecialchars($d['title'], ENT_QUOTES, 'UTF-8'); ?>
+						</a>
+
+						<p class="card-excerpt">
+							<?php echo htmlspecialchars(mb_strimwidth($d['description'], 0, 120, '...'), ENT_QUOTES, 'UTF-8'); ?>
+						</p>
+
+						<div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+							Faculty: <?php echo htmlspecialchars($d['faculty_name'], ENT_QUOTES, 'UTF-8'); ?> &middot; <?php echo htmlspecialchars($d['department'], ENT_QUOTES, 'UTF-8'); ?>
+						</div>
+
+						<div class="card-meta">
+							<span>By: <?php echo htmlspecialchars($d['author_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+							<span><?php echo date('M j, Y', strtotime($d['created_at'])); ?></span>
+						</div>
+					</div>
+
+					<div class="card-actions" style="justify-content: space-between;">
+						<div style="display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 600; color: var(--text-muted);">
+							<span class="badge badge-gold">▲ <?php echo (int) $d['vote_score']; ?> votes</span>
+							<span>💬 <?php echo (int) $d['comment_count']; ?> replies</span>
+						</div>
+						<a href="view.php?id=<?php echo (int) $d['id']; ?>" class="btn-secondary" style="padding: 5px 12px; font-size: 12.5px;">
+							Join Discussion &rarr;
+						</a>
 					</div>
 				</div>
 			<?php endforeach; ?>
-		<?php endif; ?>
-	</section>
+		</div>
+	<?php endif; ?>
 
 	<?php if ($total_pages > 1): ?>
 		<?php
@@ -161,7 +197,7 @@ require_once '../includes/header.php';
 		<nav aria-label="Pagination">
 			<?php if ($current_page > 1): ?>
 				<?php $prev_params = array_merge($filter_params, ['page' => $current_page - 1]); ?>
-				<a href="?<?php echo htmlspecialchars(http_build_query($prev_params), ENT_QUOTES, 'UTF-8'); ?>">Prev</a>
+				<a href="?<?php echo htmlspecialchars(http_build_query($prev_params), ENT_QUOTES, 'UTF-8'); ?>">&larr; Prev</a>
 			<?php endif; ?>
 
 			<?php for ($page = 1; $page <= $total_pages; $page++): ?>
@@ -175,7 +211,7 @@ require_once '../includes/header.php';
 
 			<?php if ($current_page < $total_pages): ?>
 				<?php $next_params = array_merge($filter_params, ['page' => $current_page + 1]); ?>
-				<a href="?<?php echo htmlspecialchars(http_build_query($next_params), ENT_QUOTES, 'UTF-8'); ?>">Next</a>
+				<a href="?<?php echo htmlspecialchars(http_build_query($next_params), ENT_QUOTES, 'UTF-8'); ?>">Next &rarr;</a>
 			<?php endif; ?>
 		</nav>
 	<?php endif; ?>

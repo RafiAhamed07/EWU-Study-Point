@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS materials (
 	department VARCHAR(150) NOT NULL,
 	course_name VARCHAR(150) NOT NULL,
 	faculty_name VARCHAR(150) NOT NULL,
-	material_type ENUM('hand_notes', 'lecture_sheet', 'lecture_slide', 'term_paper', 'previous_question', 'other') NOT NULL,
+	material_type ENUM('hand_notes', 'lecture_sheet', 'lecture_slide', 'term_paper', 'previous_question', 'book', 'other') NOT NULL,
 	file_path VARCHAR(255) NOT NULL,
 	uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (id),
@@ -171,4 +171,34 @@ CREATE TABLE IF NOT EXISTS reports (
 	CONSTRAINT fk_reports_reviewed_by
 		FOREIGN KEY (reviewed_by) REFERENCES users (id)
 		ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS password_resets (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	email VARCHAR(191) NOT NULL,
+	otp VARCHAR(10) NOT NULL,
+	expires_at TIMESTAMP NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
+	KEY idx_password_resets_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS stationary_items (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	user_id INT UNSIGNED NOT NULL,
+	title VARCHAR(255) NOT NULL,
+	category ENUM('books', 'calculator', 'drawing_tools', 'lab_coat', 'electronics', 'stationery', 'other') NOT NULL,
+	price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+	condition_type ENUM('new', 'like_new', 'used') NOT NULL DEFAULT 'used',
+	contact_info VARCHAR(255) NOT NULL,
+	description TEXT NOT NULL,
+	image_path VARCHAR(255) NULL,
+	status ENUM('available', 'sold') NOT NULL DEFAULT 'available',
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
+	KEY idx_stationary_category (category),
+	KEY idx_stationary_user_id (user_id),
+	CONSTRAINT fk_stationary_user_id
+		FOREIGN KEY (user_id) REFERENCES users (id)
+		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

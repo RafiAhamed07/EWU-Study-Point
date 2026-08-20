@@ -4,14 +4,14 @@ require_once '../includes/admin_check.php';
 require_once '../config/db.php';
 require_once '../includes/functions.php';
 
-function redirect_to_dashboard(): void
+function redirect_to_reports(): void
 {
-	header('Location: dashboard.php');
+	header('Location: reports.php');
 	exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-	redirect_to_dashboard();
+	redirect_to_reports();
 }
 
 $content_type = $_POST['content_type'] ?? '';
@@ -112,4 +112,4 @@ if ($delete_succeeded) {
 	}
 }
 
-redirect_to_dashboard();
+redirect_to_reports();

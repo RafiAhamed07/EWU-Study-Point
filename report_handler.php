@@ -65,8 +65,10 @@ if ($target_type === 'discussion') {
 }
 
 $reason = trim($_POST['reason'] ?? '');
-if ($reason === '' || strlen($reason) > 500) {
-    redirect_and_exit($redirect_location);
+if ($reason === '') {
+    $reason = 'Inappropriate content or guideline violation';
+} elseif (strlen($reason) > 500) {
+    $reason = substr($reason, 0, 500);
 }
 
 if ($target_type === 'discussion') {
@@ -99,4 +101,7 @@ $insert_stmt->bind_param('iiiis', $reporter_id, $report_discussion_id, $report_c
 $insert_stmt->execute();
 $insert_stmt->close();
 
+$_SESSION['report_success'] = 'Thank you. Content has been reported and submitted to admin for review.';
+
 redirect_and_exit($redirect_location);
+
