@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$material_type = $_POST['material_type'] ?? '';
 
 	$allowed_material_types = [
+		'book',
 		'hand_notes',
 		'lecture_sheet',
 		'lecture_slide',
@@ -159,6 +160,7 @@ require_once '../includes/header.php';
 			<div>
 				<label for="material_type">Material Type</label>
 				<select id="material_type" name="material_type">
+					<option value="book" <?php echo $material_type === 'book' ? 'selected' : ''; ?>>Book / Textbook</option>
 					<option value="hand_notes" <?php echo $material_type === 'hand_notes' ? 'selected' : ''; ?>>Hand notes</option>
 					<option value="lecture_sheet" <?php echo $material_type === 'lecture_sheet' ? 'selected' : ''; ?>>Lecture sheet</option>
 					<option value="lecture_slide" <?php echo $material_type === 'lecture_slide' ? 'selected' : ''; ?>>Lecture slide</option>

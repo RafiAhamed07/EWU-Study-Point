@@ -136,7 +136,7 @@ require_once '../includes/header.php';
 											<button type="submit">Dismiss</button>
 										</form>
 										<?php if ($report['content_link'] !== null): ?>
-											<form method="POST" action="../admin/moderate.php" onsubmit="return confirm('Permanently delete this content? This cannot be undone.');">
+											<form method="POST" action="moderate.php" onsubmit="return confirm('Permanently delete this content? This cannot be undone.');">
 												<input type="hidden" name="content_type" value="<?php echo strtolower($report['content_type']); ?>">
 												<input type="hidden" name="content_id" value="<?php echo (int) ($report['discussion_id'] ?: $report['comment_id'] ?: $report['material_id']); ?>">
 												<button type="submit">Delete content</button>

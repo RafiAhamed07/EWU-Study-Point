@@ -43,12 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = 'Login — EWU Study Point';
+$success_message = $_SESSION['success_message'] ?? '';
+unset($_SESSION['success_message']);
 require_once '../includes/header.php';
 ?>
 
 <main>
 	<div class="notice-card form-card">
 		<h1>Log in</h1>
+
+		<?php if (!empty($success_message)): ?>
+			<div style="background: rgba(47, 111, 78, 0.1); border: 1px solid var(--green); color: var(--green-text); border-radius: 4px; padding: 12px 16px; margin-bottom: 16px;">
+				<?php echo htmlspecialchars($success_message, ENT_QUOTES, 'UTF-8'); ?>
+			</div>
+		<?php endif; ?>
 
 		<?php if (!empty($errors)): ?>
 			<div class="form-errors">
@@ -73,6 +81,10 @@ require_once '../includes/header.php';
 
 			<button type="submit">Login</button>
 		</form>
+
+		<p style="margin-top: 14px;">
+			<a href="forgot_password.php" style="color: #5F5E5A; text-decoration: underline;">Forgot Password?</a>
+		</p>
 
 		<p>
 			New user? <a href="register.php">Register here</a>

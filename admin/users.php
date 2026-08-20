@@ -5,9 +5,11 @@ require_once '../config/db.php';
 require_once '../includes/functions.php';
 
 $search = trim($_GET['search'] ?? '');
+$filter = trim($_GET['filter'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$target_user_id = (int) ($_POST['user_id'] ?? 0);
+	$return_filter = trim($_POST['filter'] ?? '');
 
 	if ($target_user_id > 0 && $target_user_id !== (int) $_SESSION['user_id']) {
 		$toggle_stmt = $conn->prepare('UPDATE users SET is_banned = NOT is_banned WHERE id = ?');
@@ -16,19 +18,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$toggle_stmt->close();
 	}
 
-	header('Location: users.php');
+	$redirect_url = 'users.php' . ($return_filter !== '' ? '?filter=' . urlencode($return_filter) : '');
+	header('Location: ' . $redirect_url);
 	exit;
 }
 
-$where_sql = '';
+$where_clauses = [];
 $users_params = [];
 $users_types = '';
 
+if ($filter === 'banned') {
+	$where_clauses[] = 'is_banned = 1';
+} elseif ($filter === 'active') {
+	$where_clauses[] = 'is_banned = 0';
+}
+
 if ($search !== '') {
-	$where_sql = 'WHERE name LIKE ? OR email LIKE ? OR student_id LIKE ?';
+	$where_clauses[] = '(name LIKE ? OR email LIKE ? OR student_id LIKE ?)';
 	$search_term = '%' . $search . '%';
-	$users_params = [$search_term, $search_term, $search_term];
-	$users_types = 'sss';
+	$users_params[] = $search_term;
+	$users_params[] = $search_term;
+	$users_params[] = $search_term;
+	$users_types .= 'sss';
+}
+
+$where_sql = '';
+if (!empty($where_clauses)) {
+	$where_sql = 'WHERE ' . implode(' AND ', $where_clauses);
 }
 
 $users_stmt = $conn->prepare(
@@ -62,13 +78,23 @@ require_once '../includes/header.php';
 
 	<div class="notice-card">
 		<h1>Manage users</h1>
+
+		<div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+			<a href="users.php" class="<?php echo $filter === '' ? 'btn-primary' : 'btn-secondary'; ?>" style="padding: 6px 14px; font-size: 13px;">All Users</a>
+			<a href="users.php?filter=active" class="<?php echo $filter === 'active' ? 'btn-primary' : 'btn-secondary'; ?>" style="padding: 6px 14px; font-size: 13px;">Active Users</a>
+			<a href="users.php?filter=banned" class="<?php echo $filter === 'banned' ? 'btn-primary' : 'btn-secondary'; ?>" style="padding: 6px 14px; font-size: 13px;">Banned Users</a>
+		</div>
+
 		<form method="GET" action="users.php">
+			<?php if ($filter !== ''): ?>
+				<input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter, ENT_QUOTES, 'UTF-8'); ?>">
+			<?php endif; ?>
 			<div>
 				<label for="search">Search</label>
-				<input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>">
+				<input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Search by name, student ID, or email">
 			</div>
 			<button type="submit">Filter</button>
-			<a href="users.php">Clear filters</a>
+			<a href="users.php<?php echo $filter !== '' ? '?filter=' . urlencode($filter) : ''; ?>">Clear search</a>
 		</form>
 		<div style="overflow-x: auto;">
 			<table>
@@ -102,6 +128,7 @@ require_once '../includes/header.php';
 								<?php else: ?>
 									<form method="POST" action="users.php" onsubmit="return confirm('Change this user\'s ban status?');">
 										<input type="hidden" name="user_id" value="<?php echo (int) $user['id']; ?>">
+										<input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter, ENT_QUOTES, 'UTF-8'); ?>">
 										<button type="submit"><?php echo (int) $user['is_banned'] === 1 ? 'Unban' : 'Ban'; ?></button>
 									</form>
 								<?php endif; ?>
